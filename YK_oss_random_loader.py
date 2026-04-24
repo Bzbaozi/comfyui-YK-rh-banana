@@ -150,5 +150,5 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "OSSRandomImageLoader": "OSS Random Image Loader"
+    "OSSRandomImageLoader": "YK-OSS-Random-Image-Loader"
 }
