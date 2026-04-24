@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# ComfyUI / ML
+*.safetensors
+*.ckpt
+*.pth
+*.bin
+*.onnx
+models/
+output/
+temp/
+
+# Logs
+*.log
