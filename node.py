@@ -10,9 +10,8 @@ current_dir = Path(__file__).parent
 # 定义要导入的模块名（不包括.py扩展名）
 modules_to_import = [
     'RunningHubRhartImageToImageAlioss',
-    'YK_Vision_ActionPrompt',
     'YK_Vision_ActionPrompt_v2',
-    'oss_random_loader'
+    'YK_oss_random_loader'
 ]
 
 # 初始化节点映射

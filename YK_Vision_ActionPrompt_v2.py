@@ -1,4 +1,4 @@
-# YK_Vision_ActionPrompt.py - Banana2 图像编辑专用提示词生成器（角度选择版）
+# YK_Vision_ActionPrompt_v2.py - Banana2 图像编辑专用提示词生成器（角度选择版）
 # 核心目标：UI直接设置每个角度的数量（0=不生成），生成固定简洁格式的编辑提示词
 import torch
 import numpy as np
