@@ -46,7 +46,8 @@ class RunningHubRhartImageToImageAlioss:
                 "min": 1,
                 "max": 10,
                 "step": 1,
-                "display": "number"
+                "display": "number",
+                "tooltip": "该组每个「图片组合×提示词行」要生成的变体数量（同参数不同随机种子）"
             })
 
         return {
@@ -2074,8 +2075,25 @@ class RunningHubRhartImageToImageAlioss:
             raise ValueError("所有模式的尝试次数均为0，请至少启用一个模型（将某个「最大尝试次数」设为 ≥1）")
 
         active_models.sort(key=lambda x: (-x["priority"], x["_index"]))
-        strategy = [{"type": m["type"], "max_retries": m["max_retries"]} for m in active_models]
+        strategy = [{"type": m["type"], "max_retries": m["max_retries"], "priority": m["priority"]} for m in active_models]
         return strategy
+
+    def _rotate_strategy_for_variant(self, strategy, var_id):
+        """同优先级分流：优先级相同的通道按变体序号轮转起点，
+        使并发变体分散到不同通道同时调用；优先级互不相同时顺序不变。
+        例：同优先级 [A, B]，变体1 走 A→B，变体2 走 B→A，故障转移保留。"""
+        from itertools import groupby
+        rotated = []
+        offset = max(0, int(var_id) - 1)
+        # strategy 已按优先级降序排列，同优先级必相邻，groupby 可直接分组
+        for _, group in groupby(strategy, key=lambda s: s.get("priority")):
+            members = list(group)
+            n = len(members)
+            if n > 1:
+                k = offset % n
+                members = members[k:] + members[:k]
+            rotated.extend(members)
+        return rotated
 
     API_TYPE_NAMES = {
         "community": "社区版",
@@ -2098,8 +2116,11 @@ class RunningHubRhartImageToImageAlioss:
                              mask_url=None, xinbao_gpt_model="gpt-image-2",
                              xinbao_gemini_model="gemini-3-pro-image-preview-vip"):
         total_attempt = 0
+        # 同优先级分流：不同变体在同优先级通道组内轮转起点，并发时分散到不同模型
+        strategy = self._rotate_strategy_for_variant(strategy, var_id)
+        # 缓存键含组号与变体号，避免同提示词的不同变体复用同一张图导致重复出图
         base_cache_key = self._generate_task_id(
-            "strategy_base", image_urls, prompt, resolution, aspect_ratio
+            f"strategy_base_{group_id}_v{var_id}", image_urls, prompt, resolution, aspect_ratio
         )
 
         for step in strategy:
@@ -2114,7 +2135,7 @@ class RunningHubRhartImageToImageAlioss:
 
             cached_result = self._get_cached_task(base_cache_key)
             if cached_result and cached_result.get("status") == "SUCCESS":
-                print(f"[组 {group_id} 变体 {var_id}] 复用先前其他API的成功结果! ✅", flush=True)
+                print(f"[组 {group_id} 变体 {var_id}] 复用本变体先前其他API的成功结果! ✅", flush=True)
                 return cached_result.get("image")
 
             for retry in range(max_retries):
@@ -2455,15 +2476,17 @@ class RunningHubRhartImageToImageAlioss:
         else:
             effective_aspect_ratio = aspect_ratio if aspect_ratio != "\u81ea\u52a8" else "1:1"
 
-        # 生成变体配置：图片组合 × 提示词行
+        # 生成变体配置：图片组合 × 提示词行 × 批量数（batch_count）
+        batch_count = min(max(1, int(batch_count)), 10)
         variant_configs = []
         var_id = 1
         for image_task in image_tasks:
             for prompt in prompt_list:
-                variant_configs.append((var_id, prompt, image_task))
-                var_id += 1
+                for _ in range(batch_count):
+                    variant_configs.append((var_id, prompt, image_task))
+                    var_id += 1
 
-        print(f"[组 {group_id}] 参考图全部上传完成，开始生成 {len(variant_configs)} 个变体（{len(image_tasks)} 个图片组合 × {len(prompt_list)} 行提示词）", flush=True)
+        print(f"[组 {group_id}] 参考图全部上传完成，开始生成 {len(variant_configs)} 个变体（{len(image_tasks)} 个图片组合 × {len(prompt_list)} 行提示词 × {batch_count} 批量）", flush=True)
 
         # 执行任务：达到「每组成功数量」即提前返回并取消剩余任务
         successful_results = self._execute_variants_with_target_success(
@@ -2626,9 +2649,12 @@ class RunningHubRhartImageToImageAlioss:
             if not image_inputs:
                 continue
 
-            effective_batch_count = len(prompt_lines)
-            if effective_batch_count < 1:
-                effective_batch_count = 1
+            # 读取该组 batch_count_N 控件：每个「图片组合×提示词行」生成的变体数
+            try:
+                user_batch_count = int(kwargs.get(f"batch_count_{i}", 1))
+            except (TypeError, ValueError):
+                user_batch_count = 1
+            effective_batch_count = min(max(1, user_batch_count), 10)
 
             valid_tasks.append((i - 1, group_letter, image_inputs, prompt_lines, effective_batch_count))
 
