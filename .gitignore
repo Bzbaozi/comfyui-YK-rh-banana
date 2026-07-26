@@ -28,3 +28,11 @@ temp/
 
 # Logs
 *.log
+
+# IDE / 编辑器缓存
+.qoder/
+
+# API 文档（仅本地保留，不上传）
+*.txt
+api文档/
+embed-integration-guide(1).md

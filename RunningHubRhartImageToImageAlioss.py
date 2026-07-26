@@ -105,10 +105,24 @@ class RunningHubRhartImageToImageAlioss:
                     "min": 0,
                     "max": 5,
                     "step": 1,
-                    "tooltip": "使用 RunningHub 的 G2 社区版 模型。设为0则跳过。"
+                    "tooltip": "使用 RunningHub 的 G2 低价渠道版 模型。设为0则跳过。"
                 }),
                 "G2_社区版_优先级": ("INT", {
                     "default": 55,
+                    "min": 0,
+                    "max": 100,
+                    "step": 1,
+                    "tooltip": "数值越大，调用优先级越高（仅当尝试次数>0时生效）"
+                }),
+                "G2_官方稳定版_最大尝试次数": ("INT", {
+                    "default": 2,
+                    "min": 0,
+                    "max": 5,
+                    "step": 1,
+                    "tooltip": "使用 RunningHub 的 G2 官方稳定版（高保真引擎）。设为0则跳过。"
+                }),
+                "G2_官方稳定版_优先级": ("INT", {
+                    "default": 60,
                     "min": 0,
                     "max": 100,
                     "step": 1,
@@ -128,15 +142,29 @@ class RunningHubRhartImageToImageAlioss:
                     "step": 1,
                     "tooltip": "数值越大，调用优先级越高（仅当尝试次数>0时生效）"
                 }),
-                "全能Xinbao_最大尝试次数": ("INT", {
+                "全能Xinbao_GPT_最大尝试次数": ("INT", {
                     "default": 1,
                     "min": 0,
                     "max": 5,
                     "step": 1,
-                    "tooltip": "设为0则跳过该模式。"
+                    "tooltip": "心宝GPT-Image通道（gpt-image-2系列）。设为0则跳过该模式。"
                 }),
-                "全能Xinbao_优先级": ("INT", {
+                "全能Xinbao_GPT_优先级": ("INT", {
                     "default": 20,
+                    "min": 0,
+                    "max": 100,
+                    "step": 1,
+                    "tooltip": "数值越大，调用优先级越高（仅当尝试次数>0时生效）"
+                }),
+                "全能Xinbao_Gemini_最大尝试次数": ("INT", {
+                    "default": 0,
+                    "min": 0,
+                    "max": 5,
+                    "step": 1,
+                    "tooltip": "心宝Gemini通道（gemini系列）。设为0则跳过该模式。"
+                }),
+                "全能Xinbao_Gemini_优先级": ("INT", {
+                    "default": 15,
                     "min": 0,
                     "max": 100,
                     "step": 1,
@@ -156,14 +184,54 @@ class RunningHubRhartImageToImageAlioss:
                     "step": 1,
                     "tooltip": "数值越大，调用优先级越高（仅当尝试次数>0时生效）"
                 }),
+                "全能图片PRO_最大尝试次数": ("INT", {
+                    "default": 1,
+                    "min": 0,
+                    "max": 5,
+                    "step": 1,
+                    "tooltip": "全能图片PRO-图生图-低价渠道版。设为0则跳过该模式。"
+                }),
+                "全能图片PRO_优先级": ("INT", {
+                    "default": 5,
+                    "min": 0,
+                    "max": 100,
+                    "step": 1,
+                    "tooltip": "数值越大，调用优先级越高（仅当尝试次数>0时生效）"
+                }),
+                "全能图片PRO_官方稳定版_最大尝试次数": ("INT", {
+                    "default": 1,
+                    "min": 0,
+                    "max": 5,
+                    "step": 1,
+                    "tooltip": "全能图片PRO-图生图-官方稳定版。设为0则跳过该模式。"
+                }),
+                "全能图片PRO_官方稳定版_优先级": ("INT", {
+                    "default": 8,
+                    "min": 0,
+                    "max": 100,
+                    "step": 1,
+                    "tooltip": "数值越大，调用优先级越高（仅当尝试次数>0时生效）"
+                }),
 
                 # === API 密钥 ===
                 "runninghub_api_key": ("STRING", {"default": "", "placeholder": "RunningHub API 密钥"}),
-                "全能Xinbao_api_key": ("STRING", {"default": "", "placeholder": "全能Xinbao API 密钥"}),
+                "全能Xinbao_api_key": ("STRING", {"default": "", "placeholder": "心宝 API 密钥（async.xinbao-ai.com）"}),
+                "全能Xinbao_GPT_model": (["gpt-image-2", "gpt-image-2-oai"], {
+                    "default": "gpt-image-2",
+                    "tooltip": "心宝GPT通道模型：gpt-image-2=标准通道，gpt-image-2-oai=OAI通道（自动传size/quality）"
+                }),
+                "全能Xinbao_Gemini_model": (["gemini-3-pro-image-preview-vip", "gemini-3-pro-image-preview-svip", "gemini-3-pro-image-preview", "gemini-3.1-flash-image-preview", "gemini-2.5-flash-image"], {
+                    "default": "gemini-3-pro-image-preview-vip",
+                    "tooltip": "心宝Gemini通道模型"
+                }),
 
                 # === 全局参数 ===
                 "resolution": (["1K", "2K", "3K", "4K", "8K"], {"default": "1K"}),
-                "aspect_ratio": (["1:1", "2:3", "3:2", "3:4", "4:3", "4:5", "5:4", "16:9", "9:16", "21:9", "自动"], {"default": "自动"}),
+                "G2_quality": (["low", "medium", "high"], {
+                    "default": "medium",
+                    "tooltip": "G2官方稳定版专用的质量参数（low/medium/high）"
+                }),
+                "aspect_ratio": (["1:1", "2:3", "3:2", "3:4", "4:3", "4:5", "5:4", "16:9", "9:16", "21:9", "9:21", "2:1", "1:2", "3:1", "1:3", "自动"], {"default": "自动"}),
                 "aspect_ratio_ref_image_index": ("INT", {
                     "default": 1,
                     "min": 1,
@@ -182,7 +250,7 @@ class RunningHubRhartImageToImageAlioss:
                 "max_wait_time": ("INT", {
                     "default": 180,
                     "min": 30,
-                    "max": 600,
+                    "max": 1800,
                     "step": 30,
                     "tooltip": "每个子任务最大等待时间（秒），适用于所有API模式"
                 }),
@@ -226,6 +294,33 @@ class RunningHubRhartImageToImageAlioss:
         i = 255. * tensor.cpu().numpy()
         img = Image.fromarray(np.clip(i, 0, 255).astype(np.uint8))
         return img
+
+    def _mask_tensor_to_pil(self, mask_tensor):
+        """将 ComfyUI MASK 张量转为带 alpha 通道的 PIL PNG（用于 API易 gpt-image-2 mask 局部重绘）
+
+        ComfyUI MASK 格式: (H, W) 或 (1, H, W)，float32，0.0=黑色/重绘区，1.0=白色/保留区
+        API规范: PNG + alpha通道，alpha=0=重绘区，alpha=255=保留区
+        转换逻辑: mask值1.0→alpha=255(保留)，mask值0.0→alpha=0(重绘)
+        """
+        import numpy as np
+        if mask_tensor is None:
+            return None
+        # 处理 batch 维度
+        if mask_tensor.ndim == 3:
+            mask_tensor = mask_tensor[0]  # 取第一张
+        # (H, W) float32 → numpy
+        mask_np = mask_tensor.cpu().numpy()
+        # 值域 [0,1]，1=保留，0=重绘
+        # 创建白色背景 + alpha通道
+        alpha = (mask_np * 255).clip(0, 255).astype(np.uint8)  # 1→255(保留), 0→0(重绘)
+        # 创建 RGBA 图像：白色背景 + alpha
+        h, w = alpha.shape
+        rgba = np.zeros((h, w, 4), dtype=np.uint8)
+        rgba[:, :, 0] = 255  # R
+        rgba[:, :, 1] = 255  # G
+        rgba[:, :, 2] = 255  # B
+        rgba[:, :, 3] = alpha  # A: 255=保留, 0=重绘
+        return Image.fromarray(rgba, mode='RGBA')
 
     def pil_to_tensor(self, pil_img):
         """将 PIL 图像转换为 PyTorch Tensor"""
@@ -338,7 +433,7 @@ class RunningHubRhartImageToImageAlioss:
 
         # ✅ 修正：使用正确的 API 路径
         resp = requests.post(
-            "https://www.runninghub.cn/openapi/v2/media/upload/binary",
+            "https://www.runninghub.ai/openapi/v2/media/upload/binary",
             files=files,
             headers=headers,
             timeout=30
@@ -380,7 +475,12 @@ class RunningHubRhartImageToImageAlioss:
             "5:4": (5.0, 4.0),
             "16:9": (16.0, 9.0),
             "9:16": (9.0, 16.0),
-            "21:9": (21.0, 9.0)
+            "21:9": (21.0, 9.0),
+            "9:21": (9.0, 21.0),
+            "2:1": (2.0, 1.0),
+            "1:2": (1.0, 2.0),
+            "3:1": (3.0, 1.0),
+            "1:3": (1.0, 3.0)
         }
         w, h = pil_img.size
         if w == 0 or h == 0:
@@ -456,13 +556,22 @@ class RunningHubRhartImageToImageAlioss:
             if task_id in self._task_cache:
                 self._task_cache[task_id].update(kwargs)
 
+    def _get_endpoint_paths(self, api_type):
+        """获取不同API类型的端点路径"""
+        if api_type == "community":
+            return "/openapi/v2/rhart-image-n-pro/edit"
+        elif api_type == "official":
+            return "/openapi/v2/rhart-image-n-pro-official/edit"
+        else:
+            return "/openapi/v2/rhart-image-n-pro/edit"
+
     def _poll_task_status(self, group_id, var_id, task_id, query_url, query_headers,
                           max_wait_time, poll_interval=2, cache_key=None, stop_event=None):
         """通用任务轮询方法，带简化日志和任务复用支持"""
         success_data = None
         dots_count = 0
         dot_pattern = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠏", "⠇"]
-        max_attempts = max(1, min(max_wait_time, 600) // poll_interval)
+        max_attempts = max(1, min(max_wait_time, 1800) // poll_interval)
         print(f"[组 {group_id} 变体 {var_id}] 开始轮询，总等待时间: {max_wait_time}秒，间隔: {poll_interval}秒，最大尝试次数: {max_attempts}", flush=True)
 
         for attempt in range(1, max_attempts + 1):
@@ -541,7 +650,7 @@ class RunningHubRhartImageToImageAlioss:
                                               api_key, resolution, aspect_ratio, max_wait_time, stop_event=None):
         self._rate_limit_request("seedream_v4_5", 0.5)
 
-        base_url = "https://www.runninghub.cn"
+        base_url = "https://www.runninghub.ai"
         headers = {
             "Authorization": f"Bearer {api_key.strip()}",
             "Content-Type": "application/json"
@@ -671,59 +780,178 @@ class RunningHubRhartImageToImageAlioss:
         except Exception as e:
             raise RuntimeError(f"Seedream v4.5 调用失败: {e}")
 
+    def _get_gpt_image2_oai_size(self, image_size, aspect_ratio):
+        """根据imageSize和aspectRatio查表生成gpt-image-2-oai的size参数（"WxH" ASCII x 格式，见心宝API文档）"""
+        size_table = {
+            "1K": {
+                "1:1": "1024x1024", "2:3": "1024x1536", "3:2": "1536x1024",
+                "4:3": "1024x768", "3:4": "768x1024", "16:9": "1280x720", "9:16": "720x1280"
+            },
+            "2K": {
+                "1:1": "2048x2048", "2:3": "1360x2048", "3:2": "2048x1360",
+                "4:3": "2048x1536", "3:4": "1536x2048", "16:9": "2048x1152", "9:16": "1152x2048"
+            },
+            "4K": {
+                "1:1": "2880x2880", "2:3": "2336x3504", "3:2": "3504x2336",
+                "4:3": "3264x2448", "3:4": "2448x3264", "16:9": "3840x2160", "9:16": "2160x3840"
+            }
+        }
+        # imageSize 默认 2K（与心宝文档一致）
+        table = size_table.get(image_size, size_table["2K"])
+        if aspect_ratio in table:
+            return table[aspect_ratio]
+        # 查表外的比例（4:5、21:9 等）：就近匹配表内支持的比例，避免一律退回 1:1
+        try:
+            w, h = aspect_ratio.split(":")
+            target = float(w) / float(h)
+            nearest = min(
+                table.keys(),
+                key=lambda r: abs(float(r.split(":")[0]) / float(r.split(":")[1]) - target)
+            )
+            return table[nearest]
+        except Exception:
+            return table["1:1"]
+
     def process_single_variation_banana(self, group_id, var_id, image_urls, prompt, seed,
                                       banana_api_key, model, resolution, aspect_ratio, max_wait_time):
+        """心宝图片生成
+        
+        API规范：
+        - gpt-image-2/gpt-image-2-oai: POST https://async.xinbao-ai.com/v1/images/generations
+          - 参数: model, prompt(自动加"创建图片,"前缀), response_format="url", image[], size?, quality?
+        - Gemini系列: POST https://async.xinbao-ai.com/v1beta/models/{model}:generateContent
+          - 模型: gemini-3-pro-image-preview-vip / -svip / (普通) / gemini-3.1-flash-image-preview / gemini-2.5-flash-image
+          - 202 响应: {id, status, polling_url, content_url}
+          - 轮询: GET /v1/tasks/{task_id}（复用 _poll_xinbao_async_task）
+          - 图片输入: inlineData.data 支持 base64 或 URL
+        """
         self._rate_limit_request("xinbao", 1.0)
-
-        base_url = "https://xinbaoapi.dpdns.org"
+    
+        base_url = "https://async.xinbao-ai.com"
         headers = {
             "Authorization": f"Bearer {banana_api_key.strip()}",
             "Content-Type": "application/json"
         }
-
-        parts = [{"text": prompt}]
-        for url in image_urls[:5]:
-            parts.append({
-                "inlineData": {
-                    "mimeType": "image/jpeg",
-                    "data": url
-                }
-            })
-
-        image_config = {}
-        mapped_res = self._map_resolution_for_non_seedream(resolution)
-        if mapped_res in ["1K", "2K", "4K", "8K"]:
-            api_res = "4K" if mapped_res == "8K" else mapped_res
-            image_config["imageSize"] = api_res
-
-        if aspect_ratio != "自动":
-            image_config["aspectRatio"] = aspect_ratio
-
-        payload = {
-            "contents": [{"role": "user", "parts": parts}],
-            "generationConfig": {
-                "responseModalities": ["IMAGE"],
-                "output": "url",
-                **({"topP": 0.95} if seed is not None else {}),
-                **({"imageConfig": image_config} if image_config else {})
+    
+        # 判断是否为GPT-Image通道
+        is_gpt_image_channel = model.startswith("gpt-image-")
+        
+        if is_gpt_image_channel:
+            # GPT-Image通道（gpt-image-2 或 gpt-image-2-oai）
+            endpoint = f"{base_url}/v1/images/generations"
+            
+            payload = {
+                "model": model,
+                "prompt": f"创建图片,{prompt}",
+                "response_format": "url"
             }
-        }
-
-        resp = requests.post(
-            f"{base_url}/v1beta/models/gemini-3-pro-image-preview:generateContent",
-            json=payload,
-            headers=headers,
-            timeout=120
-        )
+            
+            if image_urls:
+                payload["image"] = image_urls
+            
+            if model == "gpt-image-2-oai":
+                # OAI通道需要传size和quality
+                mapped_res = self._map_resolution_for_non_seedream(resolution)
+                api_res = "4K" if mapped_res == "8K" else mapped_res
+                
+                if aspect_ratio == "自动":
+                    payload["size"] = "auto"
+                else:
+                    payload["size"] = self._get_gpt_image2_oai_size(api_res, aspect_ratio)
+                
+                payload["quality"] = "high"
+            
+            print(f"[组 {group_id} 变体 {var_id}] 心宝GPT-Image API 请求: model={model}, prompt={prompt[:30]}..., 参考图={len(image_urls)}张", flush=True)
+        else:
+            # Gemini格式（旧版通道）
+            # 构建请求体（Gemini 格式）
+            parts = [{"text": prompt}]
+            for url in image_urls[:16]:  # 参考图 URL 数组
+                parts.append({
+                    "inlineData": {
+                        "mimeType": "image/jpeg",
+                        "data": url
+                    }
+                })
+    
+            image_config = {"output": "url"}
+            mapped_res = self._map_resolution_for_non_seedream(resolution)
+            if mapped_res in ["1K", "2K", "4K", "8K"]:
+                api_res = "4K" if mapped_res == "8K" else mapped_res
+                image_config["imageSize"] = api_res
+    
+            if aspect_ratio != "\u81ea\u52a8":
+                image_config["aspectRatio"] = aspect_ratio
+    
+            payload = {
+                "contents": [{"role": "user", "parts": parts}],
+                "generationConfig": {
+                    "responseModalities": ["IMAGE"],
+                    **({"topP": 0.95} if seed is not None else {}),
+                    **({"imageConfig": image_config} if image_config else {})
+                }
+            }
+    
+            endpoint = f"{base_url}/v1beta/models/{model}:generateContent"
+            print(f"[组 {group_id} 变体 {var_id}] 心宝Gemini API 请求: model={model}, imageSize={image_config.get('imageSize', 'auto')}, aspectRatio={image_config.get('aspectRatio', 'auto')}, 参考图={len(image_urls)}张", flush=True)
+    
+        # 提交任务
+        resp = requests.post(endpoint, json=payload, headers=headers, timeout=60)
         resp.raise_for_status()
-        data = resp.json()
-
-        candidates = data.get("candidates", [])
-        if not candidates:
-            raise RuntimeError(f"[组 {group_id} 变体 {var_id}] 全能Xinbao 无候选结果")
-
+        result = resp.json()
+        print(f"[组 {group_id} 变体 {var_id}] 心宝API 响应状态: {resp.status_code}", flush=True)
+    
+        if is_gpt_image_channel:
+            # GPT-Image通道响应处理
+            # 可能直接返回图片URL，也可能返回异步任务
+            if "url" in result:
+                # 同步返回
+                print(f"[组 {group_id} 变体 {var_id}] 心宝GPT-Image 同步返回图片", flush=True)
+                img_resp = requests.get(result["url"], timeout=30)
+                img_resp.raise_for_status()
+                return Image.open(BytesIO(img_resp.content))
+            elif "taskId" in result or "id" in result:
+                # 异步任务
+                task_id = result.get("taskId") or result.get("id")
+                polling_url = result.get("polling_url", f"/v1/tasks/{task_id}")
+                content_url = result.get("content_url", f"/v1/tasks/{task_id}/content")
+                print(f"[组 {group_id} 变体 {var_id}] 心宝GPT-Image 异步任务: id={task_id}", flush=True)
+                
+                output_pil = self._poll_xinbao_async_task(
+                    group_id, var_id, base_url, headers, task_id,
+                    polling_url, content_url, max_wait_time, "心宝GPT-Image"
+                )
+                print(f"[组 {group_id} 变体 {var_id}] 心宝GPT-Image 图片解析成功，尺寸: {output_pil.size}", flush=True)
+                return output_pil
+            else:
+                raise RuntimeError(f"[组 {group_id} 变体 {var_id}] 心宝GPT-Image 响应格式未知: {result}")
+        else:
+            # Gemini格式（旧版通道）
+            # 检查是否同步返回（兼容直接返回 candidates 的情况）
+            candidates = result.get("candidates", [])
+            if candidates:
+                return self._parse_xinbao_candidates(group_id, var_id, candidates)
+        
+            # 异步：提取 task_id、polling_url、content_url，复用通用轮询方法
+            task_id = result.get("id") or result.get("task_id")
+            if not task_id:
+                raise RuntimeError(f"[组 {group_id} 变体 {var_id}] 心宝Gemini 响应中未找到 task_id，完整响应: {result}")
+        
+            polling_url = result.get("polling_url", "")
+            content_url = result.get("content_url", "")
+            print(f"[组 {group_id} 变体 {var_id}] 心宝Gemini 异步任务: id={task_id}, polling={polling_url}, content={content_url}", flush=True)
+        
+            # 复用已验证的通用 Xinbao 异步轮询方法
+            output_pil = self._poll_xinbao_async_task(
+                group_id, var_id, base_url, headers, task_id,
+                polling_url, content_url, max_wait_time, "心宝Gemini"
+            )
+            print(f"[组 {group_id} 变体 {var_id}] 心宝Gemini 图片解析成功，尺寸: {output_pil.size}", flush=True)
+            return output_pil
+    
+    def _parse_xinbao_candidates(self, group_id, var_id, candidates):
+        """解析 Xinbao Gemini 格式的 candidates 响应"""
         parts_out = candidates[0].get("content", {}).get("parts", [])
-        output_pil = None
         for part in parts_out:
             inline = part.get("inlineData", {})
             mime_type = inline.get("mimeType", "")
@@ -731,27 +959,43 @@ class RunningHubRhartImageToImageAlioss:
             if mime_type.startswith("image/") and isinstance(img_data, str):
                 try:
                     if img_data.startswith("http"):
-                        img_resp = requests.get(img_data, timeout=30)
-                        img_resp.raise_for_status()
-                        output_pil = Image.open(BytesIO(img_resp.content))
+                        # URL 模式（流式下载 + 重试）
+                        dl_data = None
+                        for dl_attempt in range(1, 4):
+                            try:
+                                dl_resp = requests.get(img_data, timeout=180, stream=True)
+                                dl_resp.raise_for_status()
+                                total_size = int(dl_resp.headers.get("Content-Length", 0))
+                                downloaded = 0
+                                chunks = []
+                                for chunk in dl_resp.iter_content(chunk_size=65536):
+                                    if chunk:
+                                        chunks.append(chunk)
+                                        downloaded += len(chunk)
+                                dl_data = b"".join(chunks)
+                                break
+                            except Exception as dl_e:
+                                if dl_attempt < 3:
+                                    time.sleep(5)
+                        if dl_data:
+                            return Image.open(BytesIO(dl_data))
+                        raise RuntimeError(f"全能Xinbao 图片下载失败: {img_data}")
                     else:
                         image_bytes = base64.b64decode(img_data)
-                        output_pil = Image.open(BytesIO(image_bytes))
-                    break
-                except Exception as e:
+                        return Image.open(BytesIO(image_bytes))
+                except RuntimeError:
+                    raise
+                except Exception:
                     continue
-
-        if output_pil is None:
-            raise RuntimeError(f"[组 {group_id} 变体 {var_id}] 全能Xinbao 未返回可解析图片")
-        return output_pil
+        raise RuntimeError(f"[组 {group_id} 变体 {var_id}] 全能Xinbao 未返回可解析图片")
 
     def process_single_variation_g2_community(self, group_id, var_id, image_urls, prompt, seed,
                                             api_key, resolution, aspect_ratio, max_wait_time):
         self._rate_limit_request("g2_community", 0.8)
 
-        base_url = "https://www.runninghub.cn"
+        base_url = "https://www.runninghub.ai"
         endpoint_path = "/openapi/v2/rhart-image-g-2/image-to-image"
-        headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
+        headers = {"Authorization": f"Bearer {api_key.strip()}", "Content-Type": "application/json"}
 
         poll_interval = 2
 
@@ -761,12 +1005,16 @@ class RunningHubRhartImageToImageAlioss:
 
         submit_payload = {"prompt": prompt, "imageUrls": image_urls, "resolution": api_resolution.lower()}
         if aspect_ratio != "自动":
-            # G2 社区版仅支持有限的宽高比
-            ar_map = {"1:1":"1:1","2:3":"2:3","3:2":"3:2"}
+            # G2 低价渠道版支持的宽高比（根据API文档：1:1, 2:3, 3:2, 4:5, 5:4, 4:3, 3:4, 16:9, 9:16, 21:9, 9:21, 2:1, 1:2, 3:1, 1:3）
+            ar_map = {
+                "1:1":"1:1","2:3":"2:3","3:2":"3:2","4:5":"4:5","5:4":"5:4",
+                "4:3":"4:3","3:4":"3:4","16:9":"16:9","9:16":"9:16",
+                "21:9":"21:9","9:21":"9:21","2:1":"2:1","1:2":"1:2",
+                "3:1":"3:1","1:3":"1:3"
+            }
             if aspect_ratio in ar_map:
                 submit_payload["aspectRatio"] = ar_map[aspect_ratio]
             else:
-                # 如果宽高比不在支持列表中，使用默认值
                 print(f"[组 {group_id} 变体 {var_id}] G2_社区版不支持宽高比 {aspect_ratio}，使用默认值")
 
         print(f"[组 {group_id} 变体 {var_id}] G2_社区版 API 请求: {submit_payload}")
@@ -860,12 +1108,277 @@ class RunningHubRhartImageToImageAlioss:
             raise RuntimeError(f"[组 {group_id} 变体 {var_id}] G2_社区版 未返回可解析图片")
         return output_pil
 
+    def process_single_variation_g2_official(self, group_id, var_id, image_urls, prompt, seed,
+                                            api_key, resolution, aspect_ratio, quality, max_wait_time):
+        """G2 官方稳定版（高保真引擎）"""
+        self._rate_limit_request("g2_official", 0.8)
+
+        base_url = "https://www.runninghub.ai"
+        endpoint_path = "/openapi/v2/rhart-image-g-2-official/image-to-image"
+        headers = {"Authorization": f"Bearer {api_key.strip()}", "Content-Type": "application/json"}
+
+        poll_interval = 2
+
+        # 处理分辨率
+        mapped_res = self._map_resolution_for_non_seedream(resolution)
+        api_resolution = "4K" if mapped_res == "8K" else mapped_res
+
+        submit_payload = {
+            "prompt": prompt,
+            "imageUrls": image_urls,
+            "resolution": api_resolution.lower(),
+            "quality": quality
+        }
+        if aspect_ratio != "自动":
+            # G2 官方稳定版支持的宽高比（根据API文档：1:1, 1:2, 2:1, 1:3, 3:1, 2:3, 3:2, 3:4, 4:3, 4:5, 5:4, 9:16, 21:9, 9:21, 16:9）
+            ar_map = {
+                "1:1":"1:1","1:2":"1:2","2:1":"2:1","1:3":"1:3","3:1":"3:1",
+                "2:3":"2:3","3:2":"3:2","3:4":"3:4","4:3":"4:3",
+                "4:5":"4:5","5:4":"5:4","9:16":"9:16","21:9":"21:9",
+                "9:21":"9:21","16:9":"16:9"
+            }
+            if aspect_ratio in ar_map:
+                submit_payload["aspectRatio"] = ar_map[aspect_ratio]
+            else:
+                print(f"[组 {group_id} 变体 {var_id}] G2_官方稳定版不支持宽高比 {aspect_ratio}，使用默认值")
+
+        print(f"[组 {group_id} 变体 {var_id}] G2_官方稳定版 API 请求: {submit_payload}")
+        submit_resp = requests.post(f"{base_url}{endpoint_path}", json=submit_payload, headers=headers, timeout=30)
+        submit_resp.raise_for_status()
+
+        response_json = submit_resp.json()
+        print(f"[组 {group_id} 变体 {var_id}] G2_官方稳定版 API 响应: {response_json}")
+
+        task_id = response_json.get("taskId")
+        if not task_id:
+            raise RuntimeError(f"[组 {group_id} 变体 {var_id}] 未返回 taskId，响应: {response_json}")
+
+        cache_key = self._generate_task_id(
+            "runninghub_g2_official",
+            image_urls, prompt, resolution, aspect_ratio, seed
+        )
+
+        query_url = f"{base_url}/openapi/v2/query"
+        query_headers = {"Authorization": f"Bearer {api_key.strip()}"}
+
+        success_data = self._poll_task_status(
+            group_id, var_id, task_id, query_url, query_headers,
+            max_wait_time, poll_interval, cache_key
+        )
+
+        if success_data is None:
+            print(f"[组 {group_id} 变体 {var_id}] 轮询超时，启动最终确认阶段（最多等待额外30秒）...", flush=True)
+            final_max_attempts = 10
+            final_poll_interval = 3
+
+            for final_attempt in range(final_max_attempts):
+                try:
+                    final_resp = requests.post(
+                        query_url,
+                        json={"taskId": task_id},
+                        headers=query_headers,
+                        timeout=15
+                    )
+                    final_resp.raise_for_status()
+                    final_data = final_resp.json()
+
+                    current_status = final_data.get("status", "UNKNOWN")
+                    if current_status == "SUCCESS":
+                        success_data = final_data
+                        print(f"[组 {group_id} 变体 {var_id}] 最终确认成功！任务已完成 ✅", flush=True)
+                        if cache_key:
+                            self._set_cached_task(cache_key, {
+                                "status": "SUCCESS",
+                                "data": final_data,
+                                "task_id": task_id
+                            })
+                        break
+                    elif current_status == "FAILED":
+                        error_msg = final_data.get("errorMessage", "Unknown error")
+                        raise RuntimeError(f"最终确认：任务已失败: {error_msg}")
+                    else:
+                        if final_attempt < final_max_attempts - 1:
+                            print(f"[组 {group_id} 变体 {var_id}] 最终确认第 {final_attempt + 1} 次：状态={current_status}，{final_poll_interval}秒后重试...", flush=True)
+                            time.sleep(final_poll_interval)
+                        else:
+                            raise RuntimeError(f"最终确认超时：经过 {final_max_attempts * final_poll_interval} 秒额外等待，状态仍为: {current_status}")
+                except Exception as e:
+                    if final_attempt < final_max_attempts - 1:
+                        print(f"[组 {group_id} 变体 {var_id}] 最终确认网络错误，{final_poll_interval}秒后重试: {e}", flush=True)
+                        time.sleep(final_poll_interval)
+                    else:
+                        raise RuntimeError(f"最终确认网络错误且重试耗尽: {e}")
+
+        results = success_data.get("results", [])
+        if not results or not isinstance(results, list) or len(results) == 0:
+            file_url = success_data.get("fileUrl") or success_data.get("imageUrl")
+            if file_url:
+                results = [{"url": file_url}]
+            else:
+                raise RuntimeError("无生成结果，且 results 字段为空")
+
+        output_url = results[0].get("url")
+        if not output_url:
+            raise RuntimeError("结果 URL 为空")
+
+        print(f"[组 {group_id} 变体 {var_id}] 正在下载结果图片...", flush=True)
+        img_resp = requests.get(output_url, timeout=30)
+        img_resp.raise_for_status()
+
+        image_data = BytesIO(img_resp.content)
+        output_pil = Image.open(image_data).convert("RGB")
+
+        if output_pil is None:
+            raise RuntimeError(f"[组 {group_id} 变体 {var_id}] G2_官方稳定版 未返回可解析图片")
+        return output_pil
+
+    def _poll_xinbao_async_task(self, group_id, var_id, base_url, headers, task_id,
+                                polling_url, content_url, max_wait_time, display_name="Xinbao"):
+        """轮询 Xinbao 异步图片任务，直到完成或超时
+
+        202 响应体格式:
+          id: task_id
+          polling_url: /v1/tasks/{task_id}
+          content_url: /v1/tasks/{task_id}/content
+          status: accepted → running → succeeded / failed
+        轮询端点返回: status=succeeded 时，从 content_url 获取图片数据
+        """
+        poll_headers = {"Authorization": headers["Authorization"]}
+        poll_interval = 10  # 10秒轮询，避免 429
+        max_attempts = max(1, max_wait_time // poll_interval)
+
+        # 直接使用 202 响应中提供的 polling_url
+        poll_url = f"{base_url}{polling_url}" if polling_url else f"{base_url}/v1/tasks/{task_id}"
+        # 直接使用 202 响应中提供的 content_url
+        result_url = f"{base_url}{content_url}" if content_url else f"{base_url}/v1/tasks/{task_id}/content"
+
+        print(f"[组 {group_id} 变体 {var_id}] {display_name} 异步任务已提交: task_id={task_id}", flush=True)
+        print(f"[组 {group_id} 变体 {var_id}] {display_name} 轮询端点: {poll_url}", flush=True)
+
+        for attempt in range(1, max_attempts + 1):
+            try:
+                poll_resp = requests.get(poll_url, headers=poll_headers, timeout=30)
+                # 429 = 请求过频，等待后重试
+                if poll_resp.status_code == 429:
+                    retry_after = int(poll_resp.headers.get("Retry-After", poll_interval * 2))
+                    print(f"[组 {group_id} 变体 {var_id}] {display_name} 429 限流，等待{retry_after}秒后重试", flush=True)
+                    time.sleep(retry_after)
+                    continue
+                poll_resp.raise_for_status()
+                poll_data = poll_resp.json()
+                status = poll_data.get("status", "unknown")
+
+                # Xinbao 使用 succeeded 而非 completed
+                if status in ("succeeded", "completed"):
+                    print(f"[组 {group_id} 变体 {var_id}] {display_name} 任务成功，获取图片数据...", flush=True)
+
+                    # Xinbao 实际响应结构: poll_data["result"]["data"][0]["url"]
+                    # 先从 result.data 获取，再尝试顶层 data，最后用 content_url
+                    img_url = ""
+                    b64_json = ""
+
+                    # 路径1: result.data[0].url（Xinbao 实际格式）
+                    result_data = poll_data.get("result", {})
+                    if isinstance(result_data, dict):
+                        result_data_list = result_data.get("data", [])
+                        if result_data_list:
+                            img_url = result_data_list[0].get("url", "")
+                            b64_json = result_data_list[0].get("b64_json", "")
+
+                    # 路径2: 顶层 data（兼容其他 API 格式）
+                    if not img_url and not b64_json:
+                        top_data_list = poll_data.get("data", [])
+                        if top_data_list:
+                            img_url = top_data_list[0].get("url", "")
+                            b64_json = top_data_list[0].get("b64_json", "")
+
+                    # 路径2.5: Gemini candidates 格式（心宝 Pro 返回）
+                    candidates = poll_data.get("result", {}).get("candidates", [])
+                    if not candidates:
+                        candidates = poll_data.get("candidates", [])
+                    if (not img_url and not b64_json) and candidates:
+                        return self._parse_xinbao_candidates(group_id, var_id, candidates)
+
+                    # 下载图片（流式分块 + 进度打印 + 自动重试）
+                    if img_url:
+                        print(f"[组 {group_id} 变体 {var_id}] {display_name} 下载原始图片: {img_url[:80]}...", flush=True)
+                        print(f"[组 {group_id} 变体 {var_id}] 提示: 图片托管在境外服务器，下载可能需要较长时间，请耐心等待...", flush=True)
+                        dl_data = None
+                        for dl_attempt in range(1, 4):  # 最多重试3次
+                            try:
+                                dl_resp = requests.get(img_url, timeout=180, stream=True)
+                                dl_resp.raise_for_status()
+                                total_size = int(dl_resp.headers.get("Content-Length", 0))
+                                downloaded = 0
+                                chunks = []
+                                last_print_pct = -10
+                                for chunk in dl_resp.iter_content(chunk_size=65536):
+                                    if chunk:
+                                        chunks.append(chunk)
+                                        downloaded += len(chunk)
+                                        if total_size > 0:
+                                            pct = downloaded * 100 // total_size
+                                            if pct - last_print_pct >= 20:  # 每20%打印一次
+                                                print(f"[组 {group_id} 变体 {var_id}] {display_name} 下载进度: {pct}% ({downloaded//1024}KB/{total_size//1024}KB)", flush=True)
+                                                last_print_pct = pct
+                                        elif downloaded % (512 * 1024) < 65536:  # 无Content-Length时每512KB打印
+                                            print(f"[组 {group_id} 变体 {var_id}] {display_name} 已下载: {downloaded//1024}KB", flush=True)
+                                dl_data = b"".join(chunks)
+                                print(f"[组 {group_id} 变体 {var_id}] {display_name} 下载完成，共 {len(dl_data)//1024}KB", flush=True)
+                                break
+                            except Exception as dl_e:
+                                print(f"[组 {group_id} 变体 {var_id}] {display_name} 下载第{dl_attempt}次失败: {dl_e}，{'重试中...' if dl_attempt < 3 else '放弃'}", flush=True)
+                                if dl_attempt < 3:
+                                    time.sleep(5)
+                        if dl_data:
+                            return Image.open(BytesIO(dl_data)).convert("RGB")
+                        raise RuntimeError(f"{display_name} 图片下载失败，已重试3次: {img_url}")
+                    elif b64_json:
+                        raw_b64 = b64_json.split(",")[-1] if b64_json.startswith("data:") else b64_json
+                        image_data = base64.b64decode(raw_b64)
+                        return Image.open(BytesIO(image_data)).convert("RGB")
+
+                    # 路径3: 从 content_url 获取（作为最后手段）
+                    if content_url:
+                        try:
+                            c_url = f"{base_url}{content_url}"
+                            content_resp = requests.get(c_url, headers=poll_headers, timeout=60)
+                            content_resp.raise_for_status()
+                            content_type = content_resp.headers.get("Content-Type", "")
+                            if "image" in content_type:
+                                print(f"[组 {group_id} 变体 {var_id}] {display_name} 从 content_url 获取图片（可能非原始尺寸）", flush=True)
+                                return Image.open(BytesIO(content_resp.content)).convert("RGB")
+                        except Exception as e:
+                            print(f"[组 {group_id} 变体 {var_id}] {display_name} content_url 获取失败: {e}", flush=True)
+
+                    raise RuntimeError(
+                        f"{display_name} 任务成功但无法获取图片数据，"
+                        f"轮询响应: {poll_data}"
+                    )
+                elif status == "failed":
+                    error_info = poll_data.get("error", {})
+                    error_msg = error_info.get("message", "未知错误")
+                    raise RuntimeError(f"{display_name} 任务失败: {error_msg}")
+                else:
+                    # accepted / running / pending / in_progress
+                    if attempt % 3 == 1:  # 每30秒打印一次
+                        print(f"[组 {group_id} 变体 {var_id}] {display_name} 任务状态: {status}", flush=True)
+            except RuntimeError:
+                raise
+            except Exception as e:
+                if attempt % 3 == 1:
+                    print(f"[组 {group_id} 变体 {var_id}] {display_name} 轮询异常（第{attempt}次）: {e}", flush=True)
+
+            time.sleep(poll_interval)
+
+        raise RuntimeError(f"{display_name} 异步任务超时（等待{max_wait_time}秒）")
+
     def process_single_variation_runninghub(self, group_id, var_id, image_urls, prompt, seed,
                                           api_key, resolution, aspect_ratio, max_wait_time, endpoint_path):
         self._rate_limit_request("community" if "community" in endpoint_path else "official", 0.8)
 
-        base_url = "https://www.runninghub.cn"
-        headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
+        base_url = "https://www.runninghub.ai"
+        headers = {"Authorization": f"Bearer {api_key.strip()}", "Content-Type": "application/json"}
 
         poll_interval = 2
 
@@ -874,7 +1387,8 @@ class RunningHubRhartImageToImageAlioss:
 
         submit_payload = {"prompt": prompt, "imageUrls": image_urls, "resolution": api_resolution.lower()}
         if aspect_ratio != "自动":
-            ar_map = {"1:1":"1:1","2:3":"2:3","3:2":"3:2","3:4":"3:4","4:3":"4:3","4:5":"4:5","5:4":"5:4","16:9":"16:9","9:16":"9:16","21:9":"21:9"}
+            # community/official使用PRO版端点，支持的宽高比（1:1, 3:2, 2:3, 3:4, 4:3, 4:5, 5:4, 9:16, 16:9, 21:9，不传则自适应）
+            ar_map = {"1:1":"1:1","3:2":"3:2","2:3":"2:3","3:4":"3:4","4:3":"4:3","4:5":"4:5","5:4":"5:4","9:16":"9:16","16:9":"16:9","21:9":"21:9"}
             submit_payload["aspectRatio"] = ar_map.get(aspect_ratio, "auto")
 
         submit_resp = requests.post(f"{base_url}{endpoint_path}", json=submit_payload, headers=headers, timeout=30)
@@ -960,7 +1474,7 @@ class RunningHubRhartImageToImageAlioss:
                                          api_key, resolution, aspect_ratio, max_wait_time, stop_event=None):
         self._rate_limit_request("g31_flash", 0.5)
 
-        base_url = "https://www.runninghub.cn"
+        base_url = "https://www.runninghub.ai"
         headers = {
             "Authorization": f"Bearer {api_key.strip()}",
             "Content-Type": "application/json"
@@ -1101,7 +1615,7 @@ class RunningHubRhartImageToImageAlioss:
                                                   api_key, resolution, aspect_ratio, max_wait_time, stop_event=None):
         self._rate_limit_request("g31_flash_official", 0.5)
 
-        base_url = "https://www.runninghub.cn"
+        base_url = "https://www.runninghub.ai"
         headers = {
             "Authorization": f"Bearer {api_key.strip()}",
             "Content-Type": "application/json"
@@ -1238,17 +1752,311 @@ class RunningHubRhartImageToImageAlioss:
         img_resp.raise_for_status()
         return Image.open(BytesIO(img_resp.content))
 
+    def process_single_variation_pro(self, group_id, var_id, image_urls, prompt, seed,
+                                   api_key, resolution, aspect_ratio, max_wait_time, stop_event=None):
+        """全能图片PRO-图生图-低价渠道版"""
+        self._rate_limit_request("pro", 0.5)
+
+        base_url = "https://www.runninghub.ai"
+        endpoint_path = "/openapi/v2/rhart-image-n-pro/edit"
+        headers = {
+            "Authorization": f"Bearer {api_key.strip()}",
+            "Content-Type": "application/json"
+        }
+
+        resolution_map = {
+            "1K": "1k", "2K": "2k", "3K": "4k", "4K": "4k", "8K": "4k"
+        }
+
+        api_resolution = resolution_map.get(resolution, "1k")
+
+        payload = {
+            "imageUrls": image_urls[:10],
+            "prompt": prompt,
+            "resolution": api_resolution
+        }
+
+        if aspect_ratio != "自动":
+            # PRO版支持的宽高比（根据API文档：1:1, 16:9, 9:16, 4:3, 3:4, 3:2, 2:3, 5:4, 4:5, 21:9，不传则自适应图片尺寸）
+            ar_map = {
+                "1:1": "1:1", "16:9": "16:9", "9:16": "9:16",
+                "4:3": "4:3", "3:4": "3:4", "3:2": "3:2",
+                "2:3": "2:3", "5:4": "5:4", "4:5": "4:5", "21:9": "21:9"
+            }
+            if aspect_ratio in ar_map:
+                payload["aspectRatio"] = ar_map[aspect_ratio]
+            else:
+                print(f"[组 {group_id} 变体 {var_id}] PRO版不支持宽高比 {aspect_ratio}，跳过该参数（自适应）", flush=True)
+
+        try:
+            submit_resp = requests.post(
+                f"{base_url}{endpoint_path}",
+                json=payload,
+                headers=headers,
+                timeout=30
+            )
+            if submit_resp.status_code != 200:
+                raise RuntimeError(f"HTTP {submit_resp.status_code}: {submit_resp.text}")
+            submit_resp.raise_for_status()
+            task_data = submit_resp.json()
+            error_code = task_data.get("errorCode")
+            error_message = task_data.get("errorMessage")
+            if error_code or error_message:
+                raise RuntimeError(f"API错误: {error_message or '未知错误'} (code: {error_code})")
+            task_id = task_data.get("taskId")
+            if not task_id:
+                raise RuntimeError(f"未返回taskId，完整响应: {task_data}")
+        except requests.exceptions.RequestException as e:
+            raise RuntimeError(f"网络请求失败: {e}")
+        except Exception as e:
+            raise RuntimeError(f"任务提交失败: {e}")
+
+        print(f"[组 {group_id} 变体 {var_id}] 全能图片PRO 任务已提交 ✓", flush=True)
+
+        cache_key = self._generate_task_id(
+            "pro", image_urls, prompt, resolution, aspect_ratio, seed
+        )
+
+        query_url = f"{base_url}/openapi/v2/query"
+        query_headers = {"Authorization": f"Bearer {api_key.strip()}"}
+
+        success_data = self._poll_task_status(
+            group_id, var_id, task_id, query_url, query_headers,
+            max_wait_time, 2, cache_key, stop_event
+        )
+
+        if success_data is None:
+            print(f"[组 {group_id} 变体 {var_id}] 轮询超时，启动最终确认阶段（最多等待额外30秒）...", flush=True)
+            final_max_attempts = 10
+            final_poll_interval = 3
+
+            for final_attempt in range(final_max_attempts):
+                if stop_event and stop_event.is_set():
+                    print(f"\n[组 {group_id} 变体 {var_id}] 任务被取消", flush=True)
+                    return None
+
+                try:
+                    final_resp = requests.post(
+                        query_url,
+                        json={"taskId": task_id},
+                        headers=query_headers,
+                        timeout=15
+                    )
+                    final_resp.raise_for_status()
+                    final_data = final_resp.json()
+
+                    current_status = final_data.get("status", "UNKNOWN")
+                    if current_status == "SUCCESS":
+                        success_data = final_data
+                        print(f"[组 {group_id} 变体 {var_id}] 最终确认成功！任务已完成 ✅", flush=True)
+                        if cache_key:
+                            self._set_cached_task(cache_key, {
+                                "status": "SUCCESS",
+                                "data": final_data,
+                                "task_id": task_id
+                            })
+                        break
+                    elif current_status == "FAILED":
+                        error_msg = final_data.get("errorMessage", "Unknown error")
+                        raise RuntimeError(f"最终确认：任务已失败: {error_msg}")
+                    else:
+                        if final_attempt < final_max_attempts - 1:
+                            print(f"[组 {group_id} 变体 {var_id}] 最终确认第 {final_attempt + 1} 次：状态={current_status}，{final_poll_interval}秒后重试...", flush=True)
+                            if stop_event and stop_event.wait(timeout=final_poll_interval):
+                                print(f"\n[组 {group_id} 变体 {var_id}] 任务被取消", flush=True)
+                                return None
+                            else:
+                                time.sleep(final_poll_interval)
+                        else:
+                            raise RuntimeError(f"最终确认超时：经过 {final_max_attempts * final_poll_interval} 秒额外等待，状态仍为: {current_status}")
+                except Exception as e:
+                    if final_attempt < final_max_attempts - 1:
+                        print(f"[组 {group_id} 变体 {var_id}] 最终确认网络错误，{final_poll_interval}秒后重试: {e}", flush=True)
+                        if stop_event and stop_event.wait(timeout=final_poll_interval):
+                            print(f"\n[组 {group_id} 变体 {var_id}] 任务被取消", flush=True)
+                            return None
+                        else:
+                            time.sleep(final_poll_interval)
+                    else:
+                        raise RuntimeError(f"最终确认网络错误且重试耗尽: {e}")
+
+        results = success_data.get("results", [])
+        if not results or not isinstance(results, list) or len(results) == 0:
+            file_url = success_data.get("fileUrl") or success_data.get("imageUrl")
+            if file_url:
+                results = [{"url": file_url}]
+            else:
+                raise RuntimeError("无生成结果，且 results 字段为空")
+
+        output_url = results[0].get("url")
+        if not output_url:
+            raise RuntimeError("结果 URL 为空")
+
+        print(f"[组 {group_id} 变体 {var_id}] 正在下载结果图片...", flush=True)
+        img_resp = requests.get(output_url, timeout=30)
+        img_resp.raise_for_status()
+        return Image.open(BytesIO(img_resp.content))
+
+    def process_single_variation_pro_official(self, group_id, var_id, image_urls, prompt, seed,
+                                            api_key, resolution, aspect_ratio, max_wait_time, stop_event=None):
+        """全能图片PRO-图生图-官方稳定版"""
+        self._rate_limit_request("pro_official", 0.5)
+
+        base_url = "https://www.runninghub.ai"
+        endpoint_path = "/openapi/v2/rhart-image-n-pro-official/edit"
+        headers = {
+            "Authorization": f"Bearer {api_key.strip()}",
+            "Content-Type": "application/json"
+        }
+
+        resolution_map = {
+            "1K": "1k", "2K": "2k", "3K": "4k", "4K": "4k", "8K": "4k"
+        }
+
+        api_resolution = resolution_map.get(resolution, "1k")
+
+        payload = {
+            "imageUrls": image_urls[:10],
+            "prompt": prompt,
+            "resolution": api_resolution
+        }
+
+        if aspect_ratio != "自动":
+            # PRO官方稳定版支持的宽高比（可选参数，不传则自适应图片尺寸）
+            ar_map = {
+                "1:1": "1:1", "3:2": "3:2", "2:3": "2:3",
+                "3:4": "3:4", "4:3": "4:3", "4:5": "4:5",
+                "5:4": "5:4", "9:16": "9:16", "16:9": "16:9", "21:9": "21:9"
+            }
+            if aspect_ratio in ar_map:
+                payload["aspectRatio"] = ar_map[aspect_ratio]
+            else:
+                print(f"[组 {group_id} 变体 {var_id}] PRO官方稳定版不支持宽高比 {aspect_ratio}，跳过该参数（自适应）", flush=True)
+
+        try:
+            submit_resp = requests.post(
+                f"{base_url}{endpoint_path}",
+                json=payload,
+                headers=headers,
+                timeout=30
+            )
+            if submit_resp.status_code != 200:
+                raise RuntimeError(f"HTTP {submit_resp.status_code}: {submit_resp.text}")
+            submit_resp.raise_for_status()
+            task_data = submit_resp.json()
+            error_code = task_data.get("errorCode")
+            error_message = task_data.get("errorMessage")
+            if error_code or error_message:
+                raise RuntimeError(f"API错误: {error_message or '未知错误'} (code: {error_code})")
+            task_id = task_data.get("taskId")
+            if not task_id:
+                raise RuntimeError(f"未返回taskId，完整响应: {task_data}")
+        except requests.exceptions.RequestException as e:
+            raise RuntimeError(f"网络请求失败: {e}")
+        except Exception as e:
+            raise RuntimeError(f"任务提交失败: {e}")
+
+        print(f"[组 {group_id} 变体 {var_id}] 全能图片PRO官方版 任务已提交 ✓", flush=True)
+
+        cache_key = self._generate_task_id(
+            "pro_official", image_urls, prompt, resolution, aspect_ratio, seed
+        )
+
+        query_url = f"{base_url}/openapi/v2/query"
+        query_headers = {"Authorization": f"Bearer {api_key.strip()}"}
+
+        success_data = self._poll_task_status(
+            group_id, var_id, task_id, query_url, query_headers,
+            max_wait_time, 2, cache_key, stop_event
+        )
+
+        if success_data is None:
+            print(f"[组 {group_id} 变体 {var_id}] 轮询超时，启动最终确认阶段（最多等待额外30秒）...", flush=True)
+            final_max_attempts = 10
+            final_poll_interval = 3
+
+            for final_attempt in range(final_max_attempts):
+                if stop_event and stop_event.is_set():
+                    print(f"\n[组 {group_id} 变体 {var_id}] 任务被取消", flush=True)
+                    return None
+
+                try:
+                    final_resp = requests.post(
+                        query_url,
+                        json={"taskId": task_id},
+                        headers=query_headers,
+                        timeout=15
+                    )
+                    final_resp.raise_for_status()
+                    final_data = final_resp.json()
+
+                    current_status = final_data.get("status", "UNKNOWN")
+                    if current_status == "SUCCESS":
+                        success_data = final_data
+                        print(f"[组 {group_id} 变体 {var_id}] 最终确认成功！任务已完成 ✅", flush=True)
+                        if cache_key:
+                            self._set_cached_task(cache_key, {
+                                "status": "SUCCESS",
+                                "data": final_data,
+                                "task_id": task_id
+                            })
+                        break
+                    elif current_status == "FAILED":
+                        error_msg = final_data.get("errorMessage", "Unknown error")
+                        raise RuntimeError(f"最终确认：任务已失败: {error_msg}")
+                    else:
+                        if final_attempt < final_max_attempts - 1:
+                            print(f"[组 {group_id} 变体 {var_id}] 最终确认第 {final_attempt + 1} 次：状态={current_status}，{final_poll_interval}秒后重试...", flush=True)
+                            if stop_event and stop_event.wait(timeout=final_poll_interval):
+                                print(f"\n[组 {group_id} 变体 {var_id}] 任务被取消", flush=True)
+                                return None
+                            else:
+                                time.sleep(final_poll_interval)
+                        else:
+                            raise RuntimeError(f"最终确认超时：经过 {final_max_attempts * final_poll_interval} 秒额外等待，状态仍为: {current_status}")
+                except Exception as e:
+                    if final_attempt < final_max_attempts - 1:
+                        print(f"[组 {group_id} 变体 {var_id}] 最终确认网络错误，{final_poll_interval}秒后重试: {e}", flush=True)
+                        if stop_event and stop_event.wait(timeout=final_poll_interval):
+                            print(f"\n[组 {group_id} 变体 {var_id}] 任务被取消", flush=True)
+                            return None
+                        else:
+                            time.sleep(final_poll_interval)
+                    else:
+                        raise RuntimeError(f"最终确认网络错误且重试耗尽: {e}")
+
+        results = success_data.get("results", [])
+        if not results or not isinstance(results, list) or len(results) == 0:
+            file_url = success_data.get("fileUrl") or success_data.get("imageUrl")
+            if file_url:
+                results = [{"url": file_url}]
+            else:
+                raise RuntimeError("无生成结果，且 results 字段为空")
+
+        output_url = results[0].get("url")
+        if not output_url:
+            raise RuntimeError("结果 URL 为空")
+
+        print(f"[组 {group_id} 变体 {var_id}] 正在下载结果图片...", flush=True)
+        img_resp = requests.get(output_url, timeout=30)
+        img_resp.raise_for_status()
+        return Image.open(BytesIO(img_resp.content))
+
     def _build_strategy_by_priority(self,
-                                  seedream_v4_5_tries, g31_tries, g31_official_tries, g2_community_tries, community_tries, xinbao_tries, official_tries,
-                                  seedream_v4_5_prio, g31_prio, g31_official_prio, g2_community_prio, community_prio, xinbao_prio, official_prio):
+                                  seedream_v4_5_tries, g31_tries, g31_official_tries, g2_community_tries, g2_official_tries, community_tries, xinbao_gpt_tries, xinbao_gemini_tries, official_tries, pro_tries, pro_official_tries,
+                                  seedream_v4_5_prio, g31_prio, g31_official_prio, g2_community_prio, g2_official_prio, community_prio, xinbao_gpt_prio, xinbao_gemini_prio, official_prio, pro_prio, pro_official_prio):
         models = [
             ("Seedream_v4_5", "seedream_v4_5", seedream_v4_5_tries, seedream_v4_5_prio),
             ("V2_社区版", "g31_flash", g31_tries, g31_prio),
             ("V2_官方稳定版", "g31_flash_official", g31_official_tries, g31_official_prio),
             ("G2_社区版", "g2_community", g2_community_tries, g2_community_prio),
+            ("G2_官方稳定版", "g2_official", g2_official_tries, g2_official_prio),
             ("社区版", "community", community_tries, community_prio),
-            ("全能Xinbao", "xinbao", xinbao_tries, xinbao_prio),
+            ("全能Xinbao_GPT", "xinbao_gpt", xinbao_gpt_tries, xinbao_gpt_prio),
+            ("全能Xinbao_Gemini", "xinbao_gemini", xinbao_gemini_tries, xinbao_gemini_prio),
             ("官方PRO版", "official", official_tries, official_prio),
+            ("全能图片PRO", "pro", pro_tries, pro_prio),
+            ("全能图片PRO_官方稳定版", "pro_official", pro_official_tries, pro_official_prio),
         ]
 
         active_models = []
@@ -1272,17 +2080,23 @@ class RunningHubRhartImageToImageAlioss:
     API_TYPE_NAMES = {
         "community": "社区版",
         "official": "官方PRO版",
-        "xinbao": "全能Xinbao",
+        "xinbao_gpt": "全能Xinbao_GPT",
+        "xinbao_gemini": "全能Xinbao_Gemini",
         "g31_flash": "V2_社区版",
         "g31_flash_official": "V2_官方稳定版",
         "seedream_v4_5": "Seedream_v4_5",
-        "g2_community": "G2_社区版"
+        "g2_community": "G2_社区版",
+        "g2_official": "G2_官方稳定版",
+        "pro": "全能图片PRO",
+        "pro_official": "全能图片PRO_官方稳定版"
     }
 
     def _attempt_with_strategy(self, group_id, var_id, image_urls, prompt,
                              runninghub_api_key, banana_api_key,
                              resolution, aspect_ratio, max_wait_time,
-                             strategy, stop_event=None):
+                             strategy, stop_event=None, g2_quality="medium",
+                             mask_url=None, xinbao_gpt_model="gpt-image-2",
+                             xinbao_gemini_model="gemini-3-pro-image-preview-vip"):
         total_attempt = 0
         base_cache_key = self._generate_task_id(
             "strategy_base", image_urls, prompt, resolution, aspect_ratio
@@ -1331,11 +2145,30 @@ class RunningHubRhartImageToImageAlioss:
                             resolution, aspect_ratio, max_wait_time,
                             self._get_endpoint_paths("official")
                         )
-                    elif api_type == "xinbao":
+                    elif api_type == "pro":
+                        img = self.process_single_variation_pro(
+                            group_id, var_id, image_urls, prompt, seed,
+                            runninghub_api_key,
+                            resolution, aspect_ratio, max_wait_time, stop_event
+                        )
+                    elif api_type == "pro_official":
+                        img = self.process_single_variation_pro_official(
+                            group_id, var_id, image_urls, prompt, seed,
+                            runninghub_api_key,
+                            resolution, aspect_ratio, max_wait_time, stop_event
+                        )
+                    elif api_type == "xinbao_gpt":
                         img = self.process_single_variation_banana(
                             group_id, var_id, image_urls, prompt, seed,
                             banana_api_key,
-                            "gemini-3-pro-image-preview",
+                            xinbao_gpt_model,
+                            resolution, aspect_ratio, max_wait_time
+                        )
+                    elif api_type == "xinbao_gemini":
+                        img = self.process_single_variation_banana(
+                            group_id, var_id, image_urls, prompt, seed,
+                            banana_api_key,
+                            xinbao_gemini_model,
                             resolution, aspect_ratio, max_wait_time
                         )
                     elif api_type == "g2_community":
@@ -1343,6 +2176,12 @@ class RunningHubRhartImageToImageAlioss:
                             group_id, var_id, image_urls, prompt, seed,
                             runninghub_api_key,
                             resolution, aspect_ratio, max_wait_time
+                        )
+                    elif api_type == "g2_official":
+                        img = self.process_single_variation_g2_official(
+                            group_id, var_id, image_urls, prompt, seed,
+                            runninghub_api_key,
+                            resolution, aspect_ratio, g2_quality, max_wait_time
                         )
                     elif api_type == "g31_flash":
                         img = self.process_single_variation_g31_flash(
@@ -1413,7 +2252,10 @@ class RunningHubRhartImageToImageAlioss:
     def _execute_variants_with_target_success(self, group_id, variant_configs, 
                                             target_success_count, runninghub_api_key, 
                                             banana_api_key, resolution, 
-                                            aspect_ratio, max_wait_time, strategy):
+                                            aspect_ratio, max_wait_time, strategy,
+                                            g2_quality="medium",
+                                            mask_url=None, xinbao_gpt_model="gpt-image-2",
+                                            xinbao_gemini_model="gemini-3-pro-image-preview-vip"):
         from queue import Queue, Empty
         import threading
 
@@ -1436,7 +2278,9 @@ class RunningHubRhartImageToImageAlioss:
                     group_id, var_id, image_urls, prompt,
                     runninghub_api_key, banana_api_key,
                     resolution, aspect_ratio, max_wait_time, strategy,
-                    stop_event
+                    stop_event, g2_quality=g2_quality,
+                    xinbao_gpt_model=xinbao_gpt_model,
+                    xinbao_gemini_model=xinbao_gemini_model
                 )
 
                 with lock:
@@ -1462,13 +2306,16 @@ class RunningHubRhartImageToImageAlioss:
 
         print(f"[组 {group_id}] 已启动 {len(variant_configs)} 个变体任务，目标成功数量: {target_success_count}", flush=True)
 
+        # 目标成功数不能超过总任务数
+        effective_target = min(max(1, int(target_success_count)), total_tasks)
+
         successful_results = []
         try:
-            while len(successful_results) < total_tasks:
+            while len(successful_results) < effective_target:
                 try:
                     var_id, result = result_queue.get(timeout=0.5)
                     successful_results.append((var_id, result))
-                    print(f"[组 {group_id}] 变体 {var_id} 成功！当前成功数量: {len(successful_results)}/{total_tasks}", flush=True)
+                    print(f"[组 {group_id}] 变体 {var_id} 成功！当前成功数量: {len(successful_results)}/{effective_target}", flush=True)
                 except Empty:
                     with lock:
                         if completed_tasks >= total_tasks:
@@ -1477,6 +2324,18 @@ class RunningHubRhartImageToImageAlioss:
                 except Exception as e:
                     print(f"[组 {group_id}] 结果收集异常: {e}", flush=True)
                     stop_event.set()
+
+            # 达到目标成功数：取消剩余任务，并把已完成的额外成功结果一并收下（已产生消耗，不浪费）
+            if len(successful_results) >= effective_target:
+                if effective_target < total_tasks:
+                    stop_event.set()
+                    print(f"[组 {group_id}] 已达到目标成功数量 {effective_target}，取消剩余 {total_tasks - completed_tasks} 个未完成任务", flush=True)
+                while True:
+                    try:
+                        var_id, result = result_queue.get_nowait()
+                        successful_results.append((var_id, result))
+                    except Empty:
+                        break
         finally:
             if group_id in self._stop_events:
                 del self._stop_events[group_id]
@@ -1492,7 +2351,10 @@ class RunningHubRhartImageToImageAlioss:
                                       oss_bucket_name, oss_endpoint,
                                       aspect_ratio_ref_image_index=1,
                                       target_success_count=1,
-                                      output_format="保持原格式"):
+                                      output_format="保持原格式",
+                                      g2_quality="medium",
+                                      xinbao_gpt_model="gpt-image-2",
+                                      xinbao_gemini_model="gemini-3-pro-image-preview-vip"):
         use_oss = all([
             oss_access_key_id.strip(),
             oss_access_key_secret.strip(),
@@ -1574,20 +2436,24 @@ class RunningHubRhartImageToImageAlioss:
 
         # 处理宽高比
         effective_aspect_ratio = aspect_ratio
-        if aspect_ratio == "自动":
+        if aspect_ratio == "\u81ea\u52a8":
             try:
-                first_suffix = next(iter(image_inputs.keys()))
-                first_tensors = image_inputs[first_suffix]
-                first_img_idx = min(0, len(first_tensors)-1)
-                ref_pil = self.tensor_to_pil(first_tensors[first_img_idx])
+                # 按 aspect_ratio_ref_image_index 选择参考图（1=第一张，2=第二张...）
+                # 遍历输入后缀 a,b,c,d,e，收集所有参考图
+                all_ref_suffixes = sorted(image_inputs.keys())  # ['a', 'b', ...]
+                ref_idx = max(0, min(aspect_ratio_ref_image_index - 1, len(all_ref_suffixes) - 1))
+                ref_suffix = all_ref_suffixes[ref_idx]
+                ref_tensors = image_inputs[ref_suffix]
+                ref_img_idx = min(0, len(ref_tensors) - 1)
+                ref_pil = self.tensor_to_pil(ref_tensors[ref_img_idx])
                 inferred_ratio = self._infer_aspect_ratio_from_image(ref_pil)
                 effective_aspect_ratio = inferred_ratio
-                print(f"[组 {group_id}] 自动检测参考图比例为: {inferred_ratio} (参考图 {first_suffix}[{first_img_idx}], 尺寸 {ref_pil.size})", flush=True)
+                print(f"[组 {group_id}] 自动检测参考图比例为: {inferred_ratio} (参考图 {ref_suffix}[{ref_img_idx}], 尺寸 {ref_pil.size})", flush=True)
             except Exception as e:
                 print(f"[组 {group_id}] 自动比例检测失败，使用默认 1:1: {e}", flush=True)
                 effective_aspect_ratio = "1:1"
         else:
-            effective_aspect_ratio = aspect_ratio if aspect_ratio != "自动" else "1:1"
+            effective_aspect_ratio = aspect_ratio if aspect_ratio != "\u81ea\u52a8" else "1:1"
 
         # 生成变体配置：图片组合 × 提示词行
         variant_configs = []
@@ -1599,11 +2465,14 @@ class RunningHubRhartImageToImageAlioss:
 
         print(f"[组 {group_id}] 参考图全部上传完成，开始生成 {len(variant_configs)} 个变体（{len(image_tasks)} 个图片组合 × {len(prompt_list)} 行提示词）", flush=True)
 
-        # 执行所有任务
+        # 执行任务：达到「每组成功数量」即提前返回并取消剩余任务
         successful_results = self._execute_variants_with_target_success(
-            group_id, variant_configs, len(variant_configs),
+            group_id, variant_configs, target_success_count,
             runninghub_api_key, banana_api_key,
-            resolution, effective_aspect_ratio, max_wait_time, strategy
+            resolution, effective_aspect_ratio, max_wait_time, strategy,
+            g2_quality=g2_quality,
+            xinbao_gpt_model=xinbao_gpt_model,
+            xinbao_gemini_model=xinbao_gemini_model
         )
 
         if not successful_results:
@@ -1636,23 +2505,34 @@ class RunningHubRhartImageToImageAlioss:
                  V2_社区版_最大尝试次数,
                  V2_官方稳定版_最大尝试次数,
                  G2_社区版_最大尝试次数,
+                 G2_官方稳定版_最大尝试次数,
                  社区版_最大尝试次数,
-                 全能Xinbao_最大尝试次数,
+                 全能Xinbao_GPT_最大尝试次数,
+                 全能Xinbao_Gemini_最大尝试次数,
                  官方PRO版_最大尝试次数,
+                 全能图片PRO_最大尝试次数,
+                 全能图片PRO_官方稳定版_最大尝试次数,
                  Seedream_v4_5_优先级,
                  V2_社区版_优先级,
                  V2_官方稳定版_优先级,
                  G2_社区版_优先级,
+                 G2_官方稳定版_优先级,
                  社区版_优先级,
-                 全能Xinbao_优先级,
+                 全能Xinbao_GPT_优先级,
+                 全能Xinbao_Gemini_优先级,
                  官方PRO版_优先级,
+                 全能图片PRO_优先级,
+                 全能图片PRO_官方稳定版_优先级,
                  runninghub_api_key, 
                  全能Xinbao_api_key,
+                 全能Xinbao_GPT_model,
+                 全能Xinbao_Gemini_model,
                  oss_access_key_id,
                  oss_access_key_secret,
                  oss_bucket_name,
                  oss_endpoint,
-                 resolution, 
+                 resolution,
+                 G2_quality,
                  aspect_ratio, 
                  aspect_ratio_ref_image_index, 
                  seed, 
@@ -1669,25 +2549,33 @@ class RunningHubRhartImageToImageAlioss:
             int(V2_社区版_最大尝试次数),
             int(V2_官方稳定版_最大尝试次数),
             int(G2_社区版_最大尝试次数),
+            int(G2_官方稳定版_最大尝试次数),
             int(社区版_最大尝试次数),
-            int(全能Xinbao_最大尝试次数),
+            int(全能Xinbao_GPT_最大尝试次数),
+            int(全能Xinbao_Gemini_最大尝试次数),
             int(官方PRO版_最大尝试次数),
+            int(全能图片PRO_最大尝试次数),
+            int(全能图片PRO_官方稳定版_最大尝试次数),
             int(Seedream_v4_5_优先级),
             int(V2_社区版_优先级),
             int(V2_官方稳定版_优先级),
             int(G2_社区版_优先级),
+            int(G2_官方稳定版_优先级),
             int(社区版_优先级),
-            int(全能Xinbao_优先级),
-            int(官方PRO版_优先级)
+            int(全能Xinbao_GPT_优先级),
+            int(全能Xinbao_Gemini_优先级),
+            int(官方PRO版_优先级),
+            int(全能图片PRO_优先级),
+            int(全能图片PRO_官方稳定版_优先级)
         )
 
-        need_runninghub = any(step["type"] in ["community", "official", "g31_flash", "g31_flash_official", "seedream_v4_5", "g2_community"] for step in strategy)
-        need_xinbao = any(step["type"] == "xinbao" for step in strategy)
+        need_runninghub = any(step["type"] in ["community", "official", "g31_flash", "g31_flash_official", "seedream_v4_5", "g2_community", "g2_official", "pro", "pro_official"] for step in strategy)
+        need_xinbao = any(step["type"] in ("xinbao_gpt", "xinbao_gemini") for step in strategy)
 
         if need_runninghub and not runninghub_api_key.strip():
             raise ValueError("当前策略需要 RunningHub API 密钥，请填写")
         if need_xinbao and not 全能Xinbao_api_key.strip():
-            raise ValueError("当前策略包含「全能Xinbao」，请填写其 API 密钥")
+            raise ValueError("当前策略包含「心宝」，请填写心宝 API 密钥")
 
         use_oss = all([
             oss_access_key_id.strip(),
@@ -1699,7 +2587,7 @@ class RunningHubRhartImageToImageAlioss:
             raise ValueError("请安装 oss2: pip install oss2")
 
         global_concurrent_tasks = min(max(1, int(global_concurrent_tasks)), 10)
-        max_wait_time = min(max(30, int(max_wait_time)), 600)
+        max_wait_time = min(max(30, int(max_wait_time)), 1800)
         每组成功数量 = min(max(1, int(每组成功数量)), 10)
         max_prompt_lines_global = int(max_prompt_lines_global)
         if max_prompt_lines_global == 0:
@@ -1858,7 +2746,10 @@ class RunningHubRhartImageToImageAlioss:
                     oss_access_key_id, oss_access_key_secret, oss_bucket_name, oss_endpoint,
                     aspect_ratio_ref_image_index,
                     每组成功数量,
-                    output_format  # 传递输出格式
+                    output_format,
+                    G2_quality,
+                    xinbao_gpt_model=全能Xinbao_GPT_model,
+                    xinbao_gemini_model=全能Xinbao_Gemini_model
                 )
                 futures[future] = out_idx
 

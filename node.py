@@ -11,7 +11,8 @@ current_dir = Path(__file__).parent
 modules_to_import = [
     'RunningHubRhartImageToImageAlioss',
     'YK_Vision_ActionPrompt_v2',
-    'YK_oss_random_loader'
+    'YK_oss_random_loader',
+    'YK_oss_uploader'
 ]
 
 # 初始化节点映射
